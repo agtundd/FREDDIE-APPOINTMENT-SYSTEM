@@ -1,36 +1,35 @@
 <?php
-// Check database connection
 require '../conn.php';
 
-// Retrieve form data
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
-$role = $_POST['role'] ?? '';
+$firstName = $_POST['first_name'] ?? '';
+$lastName = $_POST['last_name'] ?? '';
+$age = $_POST['age'] ?? '';
+$email = $_POST['email'] ?? '';
+$phoneNumber = $_POST['phone_number'] ?? '';
+$role = 'customer'; // Automatically set the role to 'customer'
 
-// Check for missing fields
-if (empty($username) || empty($password) || empty($role)) {
-    die("Missing required fields");
+if (empty($username) || empty($password) || empty($firstName) || empty($lastName) || empty($age) || empty($email) || empty($phoneNumber)) {
+    echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+    exit;
 }
 
-// Hash the password
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-// Prepare the SQL statement
-$sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+$sql = "INSERT INTO users (username, password, first_name, last_name, age, email, phone_number, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {
-    $stmt->bind_param("sss", $username, $hashed_password, $role);
+    $stmt->bind_param("ssssisss", $username, $hashed_password, $firstName, $lastName, $age, $email, $phoneNumber, $role);
     if ($stmt->execute()) {
-        // Return the auto-incremented ID
-        $last_id = $conn->insert_id;
-        echo "Registration successful. User ID: $last_id";
+        echo json_encode(['success' => true, 'message' => 'Registration successful']);
     } else {
-        echo "Error: " . $stmt->error;
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $stmt->error]);
     }
     $stmt->close();
 } else {
-    echo "Error preparing statement: " . $conn->error;
+    echo json_encode(['success' => false, 'message' => 'Error preparing statement']);
 }
 
 $conn->close();
