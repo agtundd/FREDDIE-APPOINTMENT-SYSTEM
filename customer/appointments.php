@@ -43,10 +43,24 @@ $appointments = $stmt->fetchAll();
             </div>
         </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-5">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">My Appointments</h1>
+                <h1 class="h2 mt-2">My Appointments</h1>
             </div>
+
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <?= $_SESSION['success']; ?>
+                    <?php unset($_SESSION['success']); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <?= $_SESSION['error']; ?>
+                    <?php unset($_SESSION['error']); ?>
+                </div>
+            <?php endif; ?>
 
             <?php if (empty($appointments)): ?>
                 <p>You have no appointments.</p>
@@ -55,6 +69,7 @@ $appointments = $stmt->fetchAll();
                     <table class="table table-striped table-sm">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Date</th>
                                 <th>Service</th>
                                 <th>Status</th>
@@ -64,14 +79,13 @@ $appointments = $stmt->fetchAll();
                         <tbody>
                             <?php foreach ($appointments as $appointment): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
-                                    <td><?php echo htmlspecialchars($appointment['service_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($appointment['status']); ?></td>
+                                    <td><?= htmlspecialchars($appointment['id']); ?></td>
+                                    <td><?= htmlspecialchars($appointment['appointment_date']); ?></td>
+                                    <td><?= htmlspecialchars($appointment['service_name']); ?></td>
+                                    <td><?= htmlspecialchars($appointment['status']); ?></td>
                                     <td>
-                                        <a href="view_appointment.php?id=<?php echo $appointment['id']; ?>" class="btn btn-sm btn-primary">View</a>
-                                        <?php if ($appointment['status'] == 'completed'): ?>
-                                            <a href="rate_service.php?id=<?php echo $appointment['id']; ?>" class="btn btn-sm btn-secondary">Rate</a>
-                                        <?php endif; ?>
+                                        <a href="view_appointment.php?id=<?= $appointment['id']; ?>" class="btn btn-info btn-sm">View</a>
+                                        
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -84,4 +98,3 @@ $appointments = $stmt->fetchAll();
 </div>
 
 <?php require_once '../includes/footer.php'; ?>
-

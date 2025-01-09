@@ -73,14 +73,41 @@ if (!$appointment) {
                 <div class="mt-3">
                     <a href="rate_service.php?id=<?php echo $appointment['id']; ?>" class="btn btn-primary">Rate Service</a>
                 </div>
+            <?php elseif ($appointment['status'] == 'scheduled'): ?>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                        Cancel Appointment
+                    </button>
+                </div>
             <?php endif; ?>
 
             <div class="mt-3">
                 <a href="appointments.php" class="btn btn-secondary">Back to Appointments</a>
             </div>
         </main>
+
+        <!-- Cancel Modal -->
+        <div class="modal fade" id="cancelModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cancel Appointment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to cancel this appointment?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <form action="cancel_appointment.php" method="POST">
+                            <input type="hidden" name="appointment_id" value="<?php echo $appointment['id']; ?>">
+                            <button type="submit" class="btn btn-danger">Yes, Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <?php require_once '../includes/footer.php'; ?>
     </div>
 </div>
-
-<?php require_once '../includes/footer.php'; ?>
-

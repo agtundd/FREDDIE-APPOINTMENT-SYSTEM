@@ -18,12 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['appointment_id']) && i
 
 // Fetch appointments
 $stmt = $pdo->prepare("
-    SELECT a.id, a.appointment_date, a.status, s.name as service, u.first_name, u.last_name
+    SELECT a.id, a.appointment_date, a.status, s.name as service, u.first_name, u.last_name 
     FROM appointments a
     JOIN services s ON a.service_id = s.id
     JOIN users u ON a.customer_id = u.id
-    WHERE a.status IN ('scheduled', 'on-going')
-    ORDER BY a.appointment_date ASC
+    ORDER BY a.appointment_date DESC, a.id DESC
 ");
 $stmt->execute();
 $appointments = $stmt->fetchAll();
@@ -53,9 +52,9 @@ $appointments = $stmt->fetchAll();
             </div>
         </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-5">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Manage Appointments</h1>
+                <h1 class="h2 mt-2">Manage Appointments</h1>
             </div>
 
             <div class="table-responsive">
@@ -81,7 +80,6 @@ $appointments = $stmt->fetchAll();
                                         <input type="hidden" name="appointment_id" value="<?php echo $appointment['id']; ?>">
                                         <select name="new_status" onchange="this.form.submit()" class="form-select form-select-sm">
                                             <option value="">Update Status</option>
-                                            <option value="on-going">Confirmed</option>
                                             <option value="on-going">On-going</option>
                                             <option value="completed">Completed</option>
                                             <option value="cancelled">Cancelled</option>
@@ -98,4 +96,3 @@ $appointments = $stmt->fetchAll();
 </div>
 
 <?php include '../includes/footer.php'; ?>
-

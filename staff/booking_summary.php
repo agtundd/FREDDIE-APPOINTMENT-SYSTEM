@@ -6,9 +6,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'staff') {
     exit;
 }
 
-$filter = $_GET['filter'] ?? 'today';
+// Get staff ID
 $staff_id = $_SESSION['user_id'];
 
+// Get filter from URL parameter
+$filter = $_GET['filter'] ?? 'today';
+
+// Set date condition based on filter
 switch ($filter) {
     case 'today':
         $date_condition = "DATE(a.appointment_date) = CURDATE()";
@@ -26,16 +30,28 @@ switch ($filter) {
         $date_condition = "DATE(a.appointment_date) = CURDATE()";
 }
 
-$stmt = $pdo->prepare("
-    SELECT a.id, a.appointment_date, a.status, s.name as service, u.first_name, u.last_name
-    FROM appointments a
-    JOIN services s ON a.service_id = s.id
-    JOIN users u ON a.customer_id = u.id
-    WHERE $date_condition AND a.staff_id = ?
-    ORDER BY a.appointment_date DESC
-");
-$stmt->execute([$staff_id]);
-$bookings = $stmt->fetchAll();
+try {
+    // Fetch bookings
+    $stmt = $pdo->prepare("
+        SELECT 
+            a.id,
+            a.appointment_date,
+            a.status,
+            s.name as service_name,
+            u.first_name,
+            u.last_name
+        FROM appointments a
+        JOIN services s ON a.service_id = s.id
+        JOIN users u ON a.customer_id = u.id
+        WHERE {$date_condition}
+        ORDER BY a.appointment_date DESC
+    ");
+    $stmt->execute();
+    $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log("Database error: " . $e->getMessage());
+    $error = "An error occurred while fetching the booking summary.";
+}
 ?>
 
 <div class="container-fluid">
@@ -62,21 +78,53 @@ $bookings = $stmt->fetchAll();
             </div>
         </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-5">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Booking Summary</h1>
+                <h1 class="h2 mt-2">Booking Summary</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="?filter=today" class="btn btn-sm btn-outline-secondary <?php echo $filter === 'today' ? 'active' : ''; ?>">Today</a>
+                        <a href="?filter=this_week" class="btn btn-sm btn-outline-secondary <?php echo $filter === 'this_week' ? 'active' : ''; ?>">This Week</a>
+                        <a href="?filter=this_month" class="btn btn-sm btn-outline-secondary <?php echo $filter === 'this_month' ? 'active' : ''; ?>">This Month</a>
+                        <a href="?filter=this_year" class="btn btn-sm btn-outline-secondary <?php echo $filter === 'this_year' ? 'active' : ''; ?>">This Year</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <form method="get" action="" class="d-inline">
-                    <select name="filter" onchange="this.form.submit()" class="form-select">
-                        <option value="today" <?php echo $filter == 'today' ? 'selected' : ''; ?>>Today</option>
-                        <option value="this_week" <?php echo $filter == 'this_week' ? 'selected' : ''; ?>>This Week</option>
-                        <option value="this_month" <?php echo $filter == 'this_month' ? 'selected' : ''; ?>>This Month</option>
-                        <option value="this_year" <?php echo $filter == 'this_year' ? 'selected' : ''; ?>>This Year</option>
-                    </select>
-                </form>
-            </div>
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger"><?php echo $error; ?></div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($bookings)): ?>
+                                <tr>
+                                    <td colspan="4" class="text-center">No bookings found for this period.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($bookings as $booking): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars(date('M d, Y', strtotime($booking['appointment_date']))); ?></td>
+                                        <td><?php echo htmlspecialchars($booking['first_name'] . ' ' . $booking['last_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($booking['service_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($booking['status']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </main>
+    </div>
+</div>
 
-            <div
-
+<?php require_once '../includes/footer.php'; ?>

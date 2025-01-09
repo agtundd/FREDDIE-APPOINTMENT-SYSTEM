@@ -27,11 +27,23 @@ if (!isset($_SESSION['user_id'])) {
         .navbar {
             background-color: rgba(255, 255, 255, 0.95) !important;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 70px;
+            padding: 0 1rem;
+        }
+
+        .navbar-brand {
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 100%;
         }
 
         .navbar-brand img {
-            height: 40px;
+            max-height: 65px;
             width: auto;
+            object-fit: contain;
+            transform: scale(4);
+            transform-origin: left center;
         }
 
         .btn-primary {
@@ -97,14 +109,25 @@ if (!isset($_SESSION['user_id'])) {
                 margin-left: 0;
             }
         }
+
+        .bi-person-circle {
+            color: #000 !important;
+        }
+
+        #dropdownUser {
+            color: #000 !important;
+        }
+
+        #dropdownUser span {
+            color: #000 !important;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
-                <img src="../assets/images/mr-freddie.png" alt="MR.FREDDIE Logo" class="me-2">
-                <span>MR.FREDDIE</span>
+                <img src="../assets/images/mr-freddie.png" alt="MR.FREDDIE Logo" style="height: 40px; width: auto;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -112,17 +135,21 @@ if (!isset($_SESSION['user_id'])) {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="../profile.php">
-                            <i class="bi bi-person-circle"></i> Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">
-                            <i class="bi bi-box-arrow-right"></i> Log Out
-                        </a>
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-4 me-2"></i>
+                                <span>Profile</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                                <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="../logout.php">Log Out</a></li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
+</body>
+</html>

@@ -26,6 +26,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="<?php echo $_SESSION['user_role']; ?>/dashboard.php">
+            <img src="assets/images/mr-freddie.png" alt="MR.FREDDIE Logo" style="max-height: 65px; width: auto; object-fit: contain; transform: scale(1.5); transform-origin: left center;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-4 me-2"></i>
+                            <span>Profile</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                            <li><a class="dropdown-item" href="profile.php">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="logout.php">Log Out</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <div class="container-fluid">
     <div class="row">
         <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
@@ -36,6 +64,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <i class="bi bi-house-door"></i> Dashboard
                         </a>
                     </li>
+                    <?php if ($_SESSION['user_role'] === 'customer'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="customer/book_appointment.php">
+                            <i class="bi bi-calendar-plus"></i> Book Appointment
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="customer/appointments.php">
+                            <i class="bi bi-calendar-check"></i> My Appointments
+                        </a>
+                    </li>
+                    <?php endif; ?>
                     <li class="nav-item">
                         <a class="nav-link active" href="profile.php">
                             <i class="bi bi-person"></i> Profile
@@ -86,4 +126,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <?php require_once 'includes/footer.php'; ?>
-

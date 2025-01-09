@@ -40,11 +40,6 @@ $upcoming_appointments = $stmt->fetchAll();
                             <i class="bi bi-calendar-check"></i> My Appointments
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../profile.php">
-                            <i class="bi bi-person"></i> Profile
-                        </a>
-                    </li>
                 </ul>
             </div>
         </nav>
