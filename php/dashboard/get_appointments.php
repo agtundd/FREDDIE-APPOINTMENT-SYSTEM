@@ -1,8 +1,13 @@
 <?php 
 require_once '../conn.php';
 
-// Temporary user_id set to 1
-$user_id = 1;
+// Retrieve user_id from SharedPreferences or POST data
+// Assuming the user_id is sent via POST method or fetched from a session or other secure method
+if (isset($_POST['id'])) {
+    $user_id = intval($_POST['id']);  // Ensure it's an integer
+} else {
+    $user_id = 1;  // Default to 1 or handle error
+}
 
 $sql = "
     SELECT 
