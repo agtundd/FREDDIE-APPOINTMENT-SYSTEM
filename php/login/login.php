@@ -5,38 +5,35 @@ require_once '../conn.php';
 // Set response type to JSON
 header('Content-Type: application/json');
 
-// Get the input data sent via POST
-$email = $_POST['email'] ?? '';
-$password = $_POST['password'] ?? '';
+// Get input data
+$data = json_decode(file_get_contents('php://input'), true);
+$username = $data['username'] ?? '';
+$password = $data['password'] ?? '';
 
-// Debugging: Log input values (for development purposes only; remove in production)
-error_log("Email: $email, Password: $password");
-
-// Check if email exists in the database
-$stmt = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$stmt->bind_param('s', $email);
+// Check if username exists
+$stmt = $conn->prepare('SELECT * FROM users WHERE username = ?');
+$stmt->bind_param('s', $username);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-// Validate the password
 if ($user && password_verify($password, $user['password'])) {
     // Successful login
     echo json_encode([
         'success' => true,
         'user' => [
             'id' => $user['id'],
-            'email' => $user['email'], // Using email instead of username
+            'username' => $user['username'],
+            'role' => $user['role'],
         ],
     ]);
 } else {
-    // Invalid email or password
-    http_response_code(401); // Unauthorized
-    echo json_encode(['success' => false, 'message' => 'Invalid email or password']);
+    // Invalid credentials
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Invalid username or password']);
 }
 
 // Close the connection
 $stmt->close();
 $conn->close();
 ?>
-x
