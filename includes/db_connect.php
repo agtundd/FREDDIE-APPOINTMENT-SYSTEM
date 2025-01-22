@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db   = 'freddie_repairshop';
+$db   = 'mr_freddie_repair_shop';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
